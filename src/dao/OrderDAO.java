@@ -162,4 +162,78 @@ public class OrderDAO {
         }
     }
 
+    // Получить все открытые заказы
+    public List<Order> getAllOpenOrders() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT id, table_id, waiter_id, opened_at, closed_at, total_sum, status " +
+                "FROM orders WHERE status = 'open' ORDER BY opened_at DESC";
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Order order = new Order(
+                        rs.getInt("id"),
+                        rs.getInt("table_id"),
+                        rs.getInt("waiter_id"),
+                        rs.getTimestamp("opened_at"),
+                        rs.getTimestamp("closed_at"),
+                        rs.getBigDecimal("total_sum"),
+                        rs.getString("status")
+                );
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    // Получить заказы за сегодня
+    public List<Order> getTodayOrders() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT id, table_id, waiter_id, opened_at, closed_at, total_sum, status " +
+                "FROM orders WHERE DATE(opened_at) = CURRENT_DATE";
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Order order = new Order(
+                        rs.getInt("id"),
+                        rs.getInt("table_id"),
+                        rs.getInt("waiter_id"),
+                        rs.getTimestamp("opened_at"),
+                        rs.getTimestamp("closed_at"),
+                        rs.getBigDecimal("total_sum"),
+                        rs.getString("status")
+                );
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    // Получить выручку за сегодня
+    public BigDecimal getTodayRevenue() {
+        String sql = "SELECT COALESCE(SUM(total_sum), 0) as revenue FROM orders " +
+                "WHERE DATE(opened_at) = CURRENT_DATE AND status IN ('closed', 'paid')";
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                return rs.getBigDecimal("revenue");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
+    }
+
 }
