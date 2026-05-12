@@ -41,17 +41,18 @@ public class OrderDAO {
 
     // Создать новый заказ
     public int createOrder(int tableId, int waiterId) {
-        String sql = "INSERT INTO orders (table_id, waiter_id, status) VALUES (?, ?, 'open') RETURNING id";
+        String sql = "INSERT INTO orders (table_id, waiter_id, status) VALUES (?, ?, 'open')";
 
         try (Connection conn = DBConnectionManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setInt(1, tableId);
             pstmt.setInt(2, waiterId);
-            ResultSet rs = pstmt.executeQuery();
+            pstmt.executeUpdate();
 
+            ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
-                return rs.getInt("id");
+                return rs.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
