@@ -29,10 +29,13 @@
 ```bash
 git clone https://github.com/OneAstr0/cafe-administrator.git
 cd cafe-administrator
+```
 
-**### 2. Запусти базы данных через Docker**
+### 2. Запусти базы данных через Docker
 ```bash
 docker-compose up -d
+```
+
 Будут подняты контейнеры:
 
 PostgreSQL → localhost:5433 (база cafe_db, пользователь postgres, пароль root)
@@ -41,7 +44,7 @@ MySQL → localhost:3306 (база cafe_db, пользователь root, па�
 
 Проверить можно командой docker ps.
 
-**### 3. Настрой активную СУБД**
+### 3. Настрой активную СУБД
 Открой файл resources/config.properties и выбери нужную:
 
 ```properties
@@ -50,8 +53,8 @@ active=postgresql
 
 # Или для MySQL
 active=mysql
-
-**### 4. Запусти приложение**
+```
+### 4. Запусти приложение
 Вариант А — через IDE (IntelliJ IDEA)
 
 Открой проект как File → Open
@@ -63,8 +66,9 @@ active=mysql
 ```bash
 javac -cp ".;postgresql-42.7.10.jar;mysql-connector-j-8.4.0.jar" src/App.java
 java -cp ".;src;postgresql-42.7.10.jar;mysql-connector-j-8.4.0.jar" App
+```
 
-**### 5. Начинай работу**
+### 5. Начинай работу
 Зелёный стол → свободен (клик → новый заказ)
 
 Красный стол → занят (клик → редактирование заказа)
@@ -72,7 +76,7 @@ java -cp ".;src;postgresql-42.7.10.jar;mysql-connector-j-8.4.0.jar" App
 Правая панель → список активных заказов + статистика
 
 
-**🗄️ Структура базы данных (7 таблиц)**
+### 🗄️ Структура базы данных (7 таблиц)
 Таблица	 |  Описание
 users  	Пользователи системы (admin / waiter)
 waiters	  Официанты (ФИО, телефон, смена, связь с user)
@@ -84,14 +88,15 @@ order_items	  Состав заказа (блюдо, количество, це�
 
 
 
-**⚙️ Устройство кода**
-text
+### ⚙️ Устройство кода 
+```text
 src/
 ├── App.java                # Точка входа
 ├── db/DBConnectionManager  # Подключение к БД (поддержка 2 СУБД)
 ├── model/                  # Entity-классы (Order, Table, Dish...)
 ├── dao/                    # Data Access Objects (работа с таблицами)
 └── ui/                     # GUI: главное окно, карта зала, диалоги
+```
 
 DBConnectionManager сам читает config.properties, подгружает нужный драйвер, создаёт таблицы и тестовые данные при первом запуске
 
